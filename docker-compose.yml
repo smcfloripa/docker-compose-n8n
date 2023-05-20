@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - 5678:5678
+    environment:
+      - N8N_QUEUE_TYPE=redis
+      - N8N_QUEUE_HOST=redis
+      - N8N_QUEUE_PORT=6379
+      - N8N_QUEUE_NAME=n8n
+      - DATABASE_URL=mysql://n8n:n8n@mysql:3306/n8n # para por a senha //n8n:sua_senha@mysql:3306/n8n
+      - N8N_HOST=seu_dominio # no domino e so o dominio sem / ou http:// ou https://
+    networks:
+      - n8n
+    depends_on:
+      - mysql
+      - redis
+  mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=n8n # Por favor não da mole, coloca um usuario e uma senha segura
+      - MYSQL_DATABASE=n8n
+      - MYSQL_USER=n8n
+      - MYSQL_PASSWORD=n8n
+    networks:
+      - n8n
+  redis:
+    image: redis:latest
+    networks:
+      - n8n
+networks:
+  n8n:
+    driver: bridge
